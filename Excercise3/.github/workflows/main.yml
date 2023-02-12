@@ -1,0 +1,20 @@
+name: Docker Compose Exercise
+run-name: ${{ github.actor }} run 3 containers at same time
+on:
+  push:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: docker compose
+        run: docker compose up -d
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: install dependencies
+        working-directory: ./app
+        run: npm install
+      - name: run tests
+        working-directory: ./app
+        run: npm test
