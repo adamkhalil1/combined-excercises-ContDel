@@ -1,0 +1,90 @@
+name: Android Build and Deployment Pipeline
+
+on:
+  push:
+    branches:
+      - 'release_*'
+      - 'main'
+
+  workflow_dispatch:
+    inputs:
+      app_id:
+        description: 'The application Id of the current build'
+        required: true
+      branch:
+        description: 'The branch from which we have to build'
+        required: true
+
+jobs:
+  build:
+    name: Setup Environment and build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the code to specific branch
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.inputs.branch }}
+
+      - name: Set up JDK
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'zulu'
+          java-version: '11'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v2
+
+      - uses: actions/cache@v2
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      - name: Generate app Apk
+        run: ./gradlew assembleRelease --stacktrace
+
+      - name: Prepare Keystore and properties
+        run: |
+          echo "${{secrets.ANDROID_KEYSTORE}}" > keystore.asc
+          mkdir -p Application/keystore
+          gpg -d --passphrase "${{secrets.ANDROID_KEYSTORE_PASSPHRASE}}" --batch android-keystore.asc > Application/keystore/keystore.jks
+          echo "storePassword=${{secrets.ANDROID_KEYSTORE_PASSPHRASE}}" >> gradle.properties
+          echo "keyPassword=${{secrets.ANDROID_KEYSTORE_PASSPHRASE}}" >> gradle.properties
+
+        ##"Alternative:
+          ##" - name: Sign app bundle
+          ##" run: |
+          ##"   jarsigner -keystore app/*.jks \
+          ##"   -storepass ${{ secrets.KEY_STORE_PASSWORD }} -keypass ${{ secrets.KEY_PASSWORD }} \
+          ##"   app/build/outputs/bundle/release/app-release.aab ${{ secrets.ALIAS }}
+
+      - name: Publish APK
+        uses: actions/upload-artifact@v3
+        with:
+          name: app-release.apk
+          path: app/release/app-release.apk
+
+      - name: Final Check with Jar Signer
+        run: |
+          ls -la
+          echo "$PWD"
+          jarsigner -verify -verbose -certs app/release/app-release.apk
+
+      - name: Signing check
+        run: |
+          if [ $(jarsigner -verify -verbose -certs app/release/app-release.apk | grep "adam") == "" ]; then
+            exit 1
+          fi
+
+      - name: Success Email
+        uses: cinotify/github-action@v1.1.0
+        with:
+          to: 'adam.khalil@edu.fh-joanneum.at'
+          subject: 'Successfull build for Docdateapp'
+          body: 'Congrats!! All actions have passed'

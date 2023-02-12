@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "156378678902",
+    "firebase_url": "https://docdateapp-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "docdateapp",
+    "storage_bucket": "docdateapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:156378678902:android:b6b3fcb3eb78404fb0c157",
+        "android_client_info": {
+          "package_name": "com.docdate"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "156378678902-prhf8e5c33kg9d51a8e85nbgej0vlrsn.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.docdate",
+            "certificate_hash": "66c8d3c8039bfdbced1307e3096017b8853f7457"
+          }
+        },
+        {
+          "client_id": "156378678902-ud4r6f9jacp8dbpj7lt6grfku97btbra.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDtbcXW0eVbUdBPBc24gNdqNRon9cl6864"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "156378678902-ud4r6f9jacp8dbpj7lt6grfku97btbra.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
