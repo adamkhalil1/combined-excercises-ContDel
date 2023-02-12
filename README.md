@@ -1,2 +1,5 @@
 # combined-excercises-ContDel
-Cobined Repo of all 4 exercised
+Combined Repo of all 4 exercised
+
+Screenshots and documentation is found in the excersices drectories
+
